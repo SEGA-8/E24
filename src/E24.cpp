@@ -111,7 +111,11 @@ void E24::write(uint16_t addr, uint8_t data)
 	Wire.beginTransmission(_deviceAddr);
 	Wire.write(highByte(addr));
 	Wire.write(lowByte(addr));
+	delay(E24_PAGE_WRITE_CYCLE);
+
 	Wire.write(data);
+	delay(E24_PAGE_WRITE_CYCLE);
+	
 	Wire.endTransmission();
 
 	//wait until the full page is being written
@@ -133,8 +137,10 @@ uint16_t E24::write(uint16_t addr, const uint8_t* data, uint16_t length)
 		//compute the next buffer size using nextPageAddress - addr
 		bSize = ((addr + pageSize) & ~(pageSize - 1)) - addr;
 		//avoid to overflow content length & max write buffer size
-		bSize = min(min(pageSize, bSize), length);
-
+		//bSize = min(min(pageSize, bSize), length);
+		if (pageSize < bSize) bSize = pageSize;
+		if (length < bSize) bSize = length;
+		
 		written = sequentialWrite(addr, data + offset, bSize);
 		length -= written;
 		addr += written;
