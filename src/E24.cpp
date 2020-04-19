@@ -133,18 +133,19 @@ uint16_t E24::write(uint16_t addr, const uint8_t* data, uint16_t length)
 	uint16_t offset = 0;
 	uint8_t bSize = 0;
 
+	//compute the next buffer size using nextPageAddress - addr, only need first time
+	bSize = ((addr + pageSize) & ~(pageSize - 1)) - addr;
+	if (length < bSize) bSize = length;
+
 	do {
-		//compute the next buffer size using nextPageAddress - addr
-		bSize = ((addr + pageSize) & ~(pageSize - 1)) - addr;
 		//avoid to overflow content length & max write buffer size
-		//bSize = min(min(pageSize, bSize), length);
-		if (pageSize < bSize) bSize = pageSize;
-		if (length < bSize) bSize = length;
-		
+		if (length < pageSize) bSize = length;
+
 		written = sequentialWrite(addr, data + offset, bSize);
 		length -= written;
 		addr += written;
 		offset += written;
+		bSize = pageSize;
 
 	} while (length > 0);
 
