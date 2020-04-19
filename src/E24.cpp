@@ -76,12 +76,13 @@ uint8_t E24::read(uint16_t addr)
 	Wire.endTransmission();
 	Wire.requestFrom(_deviceAddr, (uint8_t)1);
 	delay(E24_PAGE_WRITE_CYCLE);
-	
+
 	return Wire.read();
 }
 
 uint16_t E24::read(uint16_t addr, uint8_t* data, uint16_t length)
 {
+	E24_YIELD
 	uint8_t pageSize = E24_PAGE_SIZE(_size);
 	uint8_t read = 0;
 	uint16_t offset = 0;
@@ -89,8 +90,12 @@ uint16_t E24::read(uint16_t addr, uint8_t* data, uint16_t length)
 
 	do {
 		//avoid to overflow max read buffer size
-		bSize = min(pageSize, length);
-
+		//bSize = min(pageSize, length);
+		if (pageSize < length){
+			bSize = pageSize; //bSize = min(pageSize, length);
+		}else{
+			bSize = length;
+		}
 		read = sequentialRead(addr, data + offset, bSize);
 		length -= read;
 		addr += read;
