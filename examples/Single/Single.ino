@@ -7,7 +7,7 @@ E24 e24 = E24(E24Size_t::E24_512K, E24_DEFAULT_ADDR);
 
 void setup() {
     
-    Wire.begin();
+    Wire.begin(0,2); //D3 and D4 on ESP8266
     //write two arbitrary bytes
     e24.write(DATA_ADDR, 10);
     e24.write(DATA_ADDR + 1, 20);

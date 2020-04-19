@@ -12,7 +12,7 @@ void setup() {
         data[i] = i;
     }
     
-    Wire.begin();
+    Wire.begin(0,2); //D3 and D4 on ESP8266
     //write the entire array
     e24.write(DATA_ADDR, data, BUFFER_LENGTH);
 
