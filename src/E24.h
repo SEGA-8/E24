@@ -7,6 +7,13 @@
 #define E24_MAX_ADDRESS(size)	((static_cast<uint16_t>(1 << static_cast<uint8_t>(size)) * 1024) - 1)
 #define E24_PAGE_SIZE(size)		(static_cast<uint8_t>(1 << ((static_cast<uint8_t>(size) + 2) / 2)) * 8)
 
+// ESP8266 yield function
+#if ARDUINO_ARCH_ESP8266
+	#define E24_YIELD yield();
+#else
+	#define E24_YIELD
+#endif
+
 enum class E24Size_t : uint8_t
 {
 	E24_8K = 0,
