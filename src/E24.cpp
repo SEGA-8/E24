@@ -167,13 +167,17 @@ uint16_t E24::fill(uint16_t addr, uint8_t data, uint16_t length)
 	memset(buffer, data, WRITE_BUFFER_LENGTH);
 
 	do {
-		bSize = min(WRITE_BUFFER_LENGTH, length);
+		bSize = WRITE_BUFFER_LENGTH;
+		//bSize = min(WRITE_BUFFER_LENGTH, length);
+		if  (length < bSize) bSize = length;
+
 		written = write(addr, buffer, bSize);
 		if(written == -1) break;
 
 		length -= written,
 		addr += written;
 		offset += written;
+		
 	} while(length > 0);
 
 	return offset;
