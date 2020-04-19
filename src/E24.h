@@ -31,8 +31,8 @@ private:
 	uint8_t _deviceAddr;
 	E24Size_t _size;
 
-	uint16_t sequentialWrite(uint16_t addr, const uint8_t* data, uint16_t length);
-	uint16_t sequentialRead(uint16_t addr, uint8_t* data, uint16_t length);
+	uint16_t sequentialWrite(uint16_t addr, const uint8_t* data, uint8_t length);
+	uint16_t sequentialRead(uint16_t addr, uint8_t* data, uint8_t length);
 public:
 	E24(E24Size_t size, uint8_t addr = E24_DEFAULT_ADDR);
 	~E24();
