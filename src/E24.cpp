@@ -14,11 +14,16 @@ E24::~E24() {}
 
 uint16_t E24::sequentialWrite(uint16_t addr, const uint8_t* data, uint16_t length)
 {
+	E24_YIELD
+	uint8_t bSize = 0;
+	bSize = length;
+	if (WRITE_BUFFER_LENGTH < length) bSize = WRITE_BUFFER_LENGTH;
+	
 	Wire.beginTransmission(_deviceAddr);
 	Wire.write(highByte(addr));
 	Wire.write(lowByte(addr));
-
-	size_t w = Wire.write(data, min(WRITE_BUFFER_LENGTH, length));
+	size_t w = Wire.write(data, bSize); //min(WRITE_BUFFER_LENGTH, length)
+	E24_YIELD
 	Wire.endTransmission();
 
 	//wait until the full page is being written
@@ -29,17 +34,24 @@ uint16_t E24::sequentialWrite(uint16_t addr, const uint8_t* data, uint16_t lengt
 
 uint16_t E24::sequentialRead(uint16_t addr, uint8_t* data, uint16_t length)
 {
-	uint8_t offset = 0;
+	E24_YIELD
+	uint16_t offset = 0;
+	uint8_t bSize = 0;
+	bSize = length;
+	if (READ_BUFFER_LENGTH < length) bSize = READ_BUFFER_LENGTH;
 
 	Wire.beginTransmission(_deviceAddr);
 	Wire.write(highByte(addr));
 	Wire.write(lowByte(addr));
 	Wire.endTransmission();
+	delay(E24_PAGE_WRITE_CYCLE);
 
-	Wire.requestFrom(_deviceAddr, min(READ_BUFFER_LENGTH, length));
-	while(Wire.available()) data[offset++] = Wire.read();
-
-	return offset;
+	Wire.requestFrom(_deviceAddr, bSize); //min(READ_BUFFER_LENGTH, length)
+	while(Wire.available()) { //while(Wire.available()) data[offset++] = Wire.read();
+        	data[offset++] = Wire.read();
+        	delay(E24_PAGE_WRITE_CYCLE);
+            E24_YIELD;
+		}	return offset;
 }
 
 uint8_t E24::read()
