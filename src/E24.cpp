@@ -57,20 +57,26 @@ uint16_t E24::sequentialRead(uint16_t addr, uint8_t* data, uint16_t length)
 uint8_t E24::read()
 {
 	Wire.beginTransmission(_deviceAddr);
+	delay(E24_PAGE_WRITE_CYCLE);
 	Wire.endTransmission();
 	Wire.requestFrom(_deviceAddr, (uint8_t)1);
+	delay(E24_PAGE_WRITE_CYCLE);
 	
 	return Wire.read();
 }
 
 uint8_t E24::read(uint16_t addr)
 {
+	E24_YIELD
 	Wire.beginTransmission(_deviceAddr);
 	Wire.write(highByte(addr));
 	Wire.write(lowByte(addr));
+	delay(E24_PAGE_WRITE_CYCLE);
+
 	Wire.endTransmission();
 	Wire.requestFrom(_deviceAddr, (uint8_t)1);
-
+	delay(E24_PAGE_WRITE_CYCLE);
+	
 	return Wire.read();
 }
 
