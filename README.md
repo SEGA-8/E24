@@ -33,7 +33,7 @@ void setup() {
     config.seed = 123;
     strcpy(config.version, "1.00");
 
-    Wire.begin();
+    Wire.begin(0,2); //D3 and D4 on ESP8266
     //write a structured block to the suplied address
     e24.writeBlock(CONFIG_ADDR, config);
 
