@@ -100,8 +100,6 @@ uint16_t E24::read(uint16_t addr, uint8_t* data, uint16_t length)
 		addr += read;
 		offset += read;
 
-		E24_YIELD
-
 	} while (length > 0);
 
 	return offset;
@@ -150,8 +148,6 @@ uint16_t E24::write(uint16_t addr, const uint8_t* data, uint16_t length)
 		offset += written;
 		bSize = pageSize;
 
-		E24_YIELD
-
 	} while (length > 0);
 
 	return offset;
@@ -168,9 +164,9 @@ uint16_t E24::fill(uint16_t addr, uint8_t data, uint16_t length)
 	uint8_t bSize = 0;
 
 	memset(buffer, data, WRITE_BUFFER_LENGTH);
-
+	bSize = WRITE_BUFFER_LENGTH;
+	
 	do {
-		bSize = WRITE_BUFFER_LENGTH;
 		//bSize = min(WRITE_BUFFER_LENGTH, length);
 		if  (length < bSize) bSize = length;
 
@@ -180,12 +176,8 @@ uint16_t E24::fill(uint16_t addr, uint8_t data, uint16_t length)
 		length -= written,
 		addr += written;
 		offset += written;
-
-		E24_YIELD
 		
 	} while(length > 0);
 
 	return offset;
 }
-
-
